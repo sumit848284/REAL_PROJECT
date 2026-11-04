@@ -54,7 +54,7 @@ managers_df=spark.read.format("csv").option("header","true").option("inferSchema
 
 managers_df.show()
 
-spark.stop()
+
 
 
 
@@ -90,3 +90,14 @@ def flattened_nested(data,parent_key="",sep="."):
         flatten[parent_key]=data
     return flatten
 
+#lets perform join 
+
+employees_df.show()
+managers_df.show()
+
+#find the average employee salary by department, then show departments from highest average salary to lowest.
+
+from pyspark.sql.functions import *
+
+result_df=employees_df.groupBy("department").agg(round(avg(col("salary")),0).alias("avg_dept_salary")).orderBy(col("avg_dept_salary").desc())
+result_df.show()

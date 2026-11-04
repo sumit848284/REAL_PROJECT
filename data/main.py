@@ -57,4 +57,36 @@ managers_df.show()
 spark.stop()
 
 
- 
+
+
+
+def flattened_nested(data,parent_key="",sep="."):
+    flatten={}
+    if isinstance(data,dict):
+        for key, values in data.items():
+            if parent_key:
+                new_key=f"{parent_key}{sep}{key}"
+            else:
+                new_key=str(key)
+            try:
+                flatten.update(flattened_nested(values,new_key,sep))
+            except Exception as error:
+                raise ValueError(
+                    f"could not flatten value at '{new_key}:{error}'"
+				) from error
+    elif isinstance(data,list):
+        for index , item in enumerate(data):
+            if parent_key:
+                new_key=f"{parent_key}{sep}{index}"
+            else:
+                new_key=str(index)
+            try:
+                flatten.update(flattened_nested(item,new_key,sep))
+            except Exception as error:
+                raise ValueError(
+                    f"could not flatten value at '{new_key}':{error}"
+				) from error
+    else:
+        flatten[parent_key]=data
+    return flatten
+
